@@ -51,19 +51,27 @@ public class ProcessingSystem
     {
         var handle = new JobHandle(job.Id);
 
+        var jobCopy = new Job
+        {
+            Id = job.Id,
+            Type = job.Type,
+            Payload = job.Payload,
+            Priority = job.Priority
+        };
+
         lock (_seenLock)
         {
-            if (_seenIds.Contains(job.Id))
+            if (_seenIds.Contains(jobCopy.Id))
             {
                 handle.Fail(new InvalidOperationException("Job already submitted."));
                 return handle;
             }
-            _seenIds.Add(job.Id);
+            _seenIds.Add(jobCopy.Id);
         }
 
-        _allJobs[job.Id] = job;
+        _allJobs[jobCopy.Id] = jobCopy;
 
-        bool accepted = _queue.TryEnqueue(job, handle);
+        bool accepted = _queue.TryEnqueue(jobCopy, handle);
         if (!accepted)
             handle.Fail(new InvalidOperationException("Queue is full. Job rejected."));
 
@@ -72,13 +80,29 @@ public class ProcessingSystem
 
     public Job? GetJob(Guid id)
     {
-        _allJobs.TryGetValue(id, out var job);
-        return job;
+        if (!_allJobs.TryGetValue(id, out var job))
+            return null;
+
+        return new Job
+        {
+            Id = job.Id,
+            Type = job.Type,
+            Payload = job.Payload,
+            Priority = job.Priority
+        };
     }
 
     public IEnumerable<Job> GetTopJobs(int n)
     {
-        return _queue.PeekTopN(n);
+        return _queue.PeekTopN(n)
+            .Select(job => new Job
+            {
+                Id = job.Id,
+                Type = job.Type,
+                Payload = job.Payload,
+                Priority = job.Priority
+            })
+            .ToList();
     }
 
     private async Task WorkerLoop(CancellationToken ct)
@@ -129,7 +153,9 @@ public class ProcessingSystem
                         return;
                     }
 
-                    if (JobFailed != null) await JobFailed(job, new TimeoutException("Timeout acquiring threads."));
+                    if (JobFailed != null)
+                        await JobFailed(job, new TimeoutException("Timeout acquiring threads."));
+
                     continue;
                 }
 
@@ -149,7 +175,9 @@ public class ProcessingSystem
                     handle.Complete(result);
                     _reportManager.Record(job, duration, success: true);
 
-                    if (JobCompleted != null) await JobCompleted(job, result);
+                    if (JobCompleted != null)
+                        await JobCompleted(job, result);
+
                     return;
                 }
                 finally
@@ -167,7 +195,8 @@ public class ProcessingSystem
                     return;
                 }
 
-                if (JobFailed != null) await JobFailed(job, ex);
+                if (JobFailed != null)
+                    await JobFailed(job, ex);
             }
         }
     }

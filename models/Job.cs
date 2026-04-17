@@ -1,9 +1,9 @@
 namespace IndustrialProcessingSystem.Models;
 
-public class Job
+public record Job
 {
-    public Guid Id { get; set; }
-    public JobType Type { get; set; }
-    public string Payload { get; set; } = string.Empty;
-    public int Priority { get; set; }
+    public Guid Id { get; init; }
+    public JobType Type { get; init; }
+    public string Payload { get; init; } = string.Empty;
+    public int Priority { get; init; }
 }
