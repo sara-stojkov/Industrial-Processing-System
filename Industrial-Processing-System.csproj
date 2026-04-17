@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<LangVersion>10.0</LangVersion>
+		<RootNamespace>Processing_System</RootNamespace>
+		<AssemblyName>ConsoleApplication</AssemblyName>
+		<ProjectGuid>{D2211149-8196-C42A-0A34-52EA098BF157}</ProjectGuid>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+	<ItemGroup>
+		<Content Include="SystemConfig.xml">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+</Project>

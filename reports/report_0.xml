@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report GeneratedAt="2026-04-17T18:53:41.0967703+02:00">
+  <JobType Type="IO">
+    <Completed>10</Completed>
+    <AvgDurationMs>2499.42</AvgDurationMs>
+    <Failed>12</Failed>
+  </JobType>
+  <JobType Type="Prime">
+    <Completed>10</Completed>
+    <AvgDurationMs>1793.3</AvgDurationMs>
+    <Failed>10</Failed>
+  </JobType>
+</Report>
